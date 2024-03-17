@@ -1,0 +1,7 @@
+/* Add enough top padding to the main content area to push it below the header */
+.main-content {
+    padding-top: 100px; /* Adjust this value to match the height of your header */
+  }
+  
+  /* Rest of your CSS for layout, typography, etc. */
+  
