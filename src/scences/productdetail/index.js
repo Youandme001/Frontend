@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../components/firebase-config';
-import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import './ProductDetail.css';
 
@@ -11,20 +11,24 @@ const ProductDetail = () => {
   const [mainImageUrl, setMainImageUrl] = useState('');
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProduct = async () => {
       try {
         const response = await fetch(`http://192.168.1.193:4000/produit/${productId}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch products');
+          throw new Error('Failed to fetch product');
         }
         const data = await response.json();
-        setProduct(data.data); 
+        setProduct(data.data);
+        // Set the main image URL to the first image in the images array
+        if (data.data.images.length > 0) {
+          setMainImageUrl(data.data.images[0].filepath);
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching product:', error);
       }
     };
 
-    fetchProducts();
+    fetchProduct();
   }, [productId]);
 
   const handleAddToCart = async () => {
@@ -74,9 +78,9 @@ const ProductDetail = () => {
           <div className="product-image">
             <img src={mainImageUrl} alt={product.name} style={{ maxWidth: '300px', maxHeight: '300px' }} />
             <div className="image-options">
-              {product.imageUrls && product.images.map((filepath, index) => (
-                <button key={index} className="image-button" onClick={() => changeImage(filepath)}>
-                  <img src={filepath} alt={`${product.name} Variant`} />
+              {product.images && product.images.map((image, index) => (
+                <button key={index} className="image-button" onClick={() => changeImage(image.filepath)}>
+                  <img src={image.filepath} alt={`${product.name} Variant`} />
                 </button>
               ))}
             </div>
